@@ -44,13 +44,14 @@ U8GLIB_SSD1306_128X64 u8g(13, 11, 10, 8);	// SW SPI Com: SCK = 13, MOSI = 11, CS
 
 ///////////////////////////////////////////////////////////////////
 //----- BT instance
-SoftwareSerial BTSerial(2, 3); //Connect HC-06, RX, TX
+//>SoftwareSerial BTSerial(2, 3); //Connect HC-06, RX, TX
 ///////////////////////////////////////////////////////////////////
 
 ///////////////////////////////////////////////////////////////////
 //----- Protocol
 
 //----- Bluetooth transaction parsing
+/*
 #define TR_MODE_IDLE 1
 #define TR_MODE_WAIT_CMD 11
 #define TR_MODE_WAIT_MESSAGE 101
@@ -86,6 +87,7 @@ SoftwareSerial BTSerial(2, 3); //Connect HC-06, RX, TX
 
 byte TRANSACTION_POINTER = TR_MODE_IDLE;
 byte TR_COMMAND = CMD_TYPE_NONE;
+*/
 ///////////////////////////////////////////////////////////////////
 
 ///////////////////////////////////////////////////////////////////
@@ -189,7 +191,7 @@ void setup()   {
   iRadius = centerY - 2;
 
   //----- Setup serial connection with BT
-  BTSerial.begin(9600);  // set the data rate for the BT port
+  //>BTSerial.begin(9600);  // set the data rate for the BT port
   
   //----- Show logo
   drawStartUp();    // Show RetroWatch Logo
@@ -198,14 +200,14 @@ void setup()   {
 
 
 void loop() {
-  boolean isReceived = false;
+  //>boolean isReceived = false;
   unsigned long current_time = 0;
   
   // Get button input
   if(digitalRead(buttonPin) == LOW) isClicked = LOW;
   
   // Receive data from remote and parse
-  isReceived = receiveBluetoothData();
+  //>isReceived = receiveBluetoothData();
   
   // Update clock time
   current_time = millis();
@@ -215,8 +217,8 @@ void loop() {
   onDraw(current_time);
   
   // If data doesn't arrive, wait for a while to save battery
-  if(!isReceived)
-    delay(300);
+  //>if(!isReceived)
+    //>delay(300);
 }
 
 
@@ -291,7 +293,7 @@ void updateTime(unsigned long current_time) {
 ///////////////////////////////////
 //----- BT, Data parsing functions
 ///////////////////////////////////
-
+/*
 // Parsing packet according to current mode
 boolean receiveBluetoothData() {
   int isTransactionEnded = false;
@@ -497,7 +499,7 @@ void processTransaction() {
     setNextDisplayTime(millis(), 0);  // update screen immediately
   }
 }
-
+*/
 ///////////////////////////////////
 //----- Drawing methods
 ///////////////////////////////////
