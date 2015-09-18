@@ -99,13 +99,13 @@ void setup(void) {
   tft.setTextColor(YELLOW);
   tft.setRotation(1);
   ////////////////////////////////////////
-    drawTime();
-    drawHeart();
+  drawTime();
+  drawHeart();
 }
 
 #define MINPRESSURE 10
 #define MAXPRESSURE 1000
-int tftmax [] = {2,2,312,237};
+int tftmax [] = {2, 2, 312, 237};
 
 void loop()
 {
@@ -197,7 +197,7 @@ void updateTime(unsigned long current_time) {
 }
 
 void drawTime() {
-  tft.drawRect(tftmax[2],tftmax[1]+50,tftmax[0],tftmax[3]/10*8,COLORTIME);
+  tft.drawRect(tftmax[2], tftmax[1] + 50, tftmax[0], tftmax[3] / 10 * 8, COLORTIME);
   tft.setCursor((tftmax[2] / 3), (tftmax[3] / 2) - textSize);
   tft.print(iHour); tft.print(":"); if (iMinutes < 10) {
     tft.print("0");
@@ -209,47 +209,47 @@ void drawTime() {
     tft.print("PM");
   }
   //date
-  tft.fillRect(tftmax[2]/2,tftmax[3]/10*8,tftmax[2],tftmax[3],COLORDATE);
-  tft.setCursor(tftmax[2]/2, tftmax[3]/10*8+10);
+  tft.fillRect(tftmax[2] / 2, tftmax[3] / 10 * 8, tftmax[2], tftmax[3], COLORDATE);
+  tft.setCursor(tftmax[2] / 2, tftmax[3] / 10 * 8 + 10);
   tft.print(iDay); tft.print("/"); tft.print(iMonth);
 }
 ///////////////////////////////////
 //----- Heart Functions
 ///////////////////////////////////
-int pulse=0; int heartPrevTime=0; int numBeats=0;
+int pulse = 0; int heartPrevTime = 0; int numBeats = 0;
 void senseHeartRate(int current_time) {
   /*Sensor for finding each heart beat , will find num of beats over 10seconds and divide by 6*/
-      if (current_time - heartPrevTime < 10000) {
-        /*record pulse*/
-       numBeats += 1;
-      }else{
-         heartPrevTime = current_time;
-         pulse = numBeats/6;
-         drawHeart();
-         numBeats = 0;
-      }
-  
+  if (current_time - heartPrevTime < 10000) {
+    /*record pulse*/
+    numBeats += 1;
+  } else {
+    heartPrevTime = current_time;
+    pulse = numBeats / 6;
+    drawHeart();
+    numBeats = 0;
+  }
+
 }
 void drawHeart() {
-  tft.fillRect(tftmax[0],tftmax[3]/10*8,tftmax[2]/2,tftmax[3],COLORHEART);
+  tft.fillRect(tftmax[0], tftmax[3] / 10 * 8, tftmax[2] / 2, tftmax[3], COLORHEART);
   tft.setCursor(15, 200);
-  tft.print(pulse); tft.setTextSize(textSize/2);tft.print("BPM");tft.setTextSize(textSize);
+  tft.print(pulse); tft.setTextSize(textSize / 2); tft.print("BPM"); tft.setTextSize(textSize);
 }
 
 ///////////////////////////////////
 //----- Steps Functions
 ///////////////////////////////////
-int steps=0;
-void senseSteps(){
+int steps = 0;
+void senseSteps() {
   /*sensor for finding each step*/
-  steps +=1;
+  steps += 1;
 }
 
-void drawSteps(){
-   tft.fillRect(tftmax[0] , tftmax[1] , tftmax[2] , tftmax[1]+50 , COLORSTEPS);
- // tft.fillRect();
-  tft.setCursor(tftmax[0],tftmax[1]);
-  tft.print(steps); tft.setTextSize(textSize/2);tft.print(" steps");tft.setTextSize(textSize);
+void drawSteps() {
+  tft.fillRect(tftmax[0] , tftmax[1] , tftmax[2] , tftmax[1] + 50 , COLORSTEPS);
+  // tft.fillRect();
+  tft.setCursor(tftmax[0], tftmax[1]);
+  tft.print(steps); tft.setTextSize(textSize / 2); tft.print(" steps"); tft.setTextSize(textSize);
 }
 
 
