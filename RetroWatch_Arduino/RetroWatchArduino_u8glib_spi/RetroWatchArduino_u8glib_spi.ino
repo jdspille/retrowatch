@@ -18,7 +18,7 @@
 /*
 Retro Watch Arduino v1.0 - u8g (supports u8glib)
 
-  Get the latest version, android host app at 
+  Get the latest version, android host app at
   ------> https://github.com/godstale/retrowatch
   ------> or http://www.hardcopyworld.com
 
@@ -36,7 +36,7 @@ All text above must be included in any redistribution
 ///////////////////////////////////////////////////////////////////
 //----- OLED instance
 
-// IMPORTANT NOTE: The complete list of supported devices 
+// IMPORTANT NOTE: The complete list of supported devices
 // with all constructor calls is here: http://code.google.com/p/u8glib/wiki/device
 
 U8GLIB_SSD1306_128X64 u8g(13, 11, 10, 8);	// SW SPI Com: SCK = 13, MOSI = 11, CS = 10, A0 = 8
@@ -121,7 +121,7 @@ byte iSecond = 0;
 
 #define TIME_BUFFER_MAX 6
 char timeParsingIndex = 0;
-char timeBuffer[6] = {-1, -1, -1, -1, -1, -1};
+char timeBuffer[6] = { -1, -1, -1, -1, -1, -1};
 PROGMEM const char* weekString[] = {"", "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
 PROGMEM const char* ampmString[] = {"AM", "PM"};
 ///////////////////////////////////////////////////////////////////
@@ -180,11 +180,11 @@ void setup()   {
 
   //----- Set button
   pinMode(buttonPin, INPUT);  // Defines button pin
-  
+
   //----- Initialize message buffer
   init_emg_array();
   init_msg_array();
-  
+
   //----- Set display features
   centerX = u8g.getWidth() / 2;
   centerY = u8g.getHeight() / 2;
@@ -192,7 +192,7 @@ void setup()   {
 
   //----- Setup serial connection with BT
   //>BTSerial.begin(9600);  // set the data rate for the BT port
-  
+
   //----- Show logo
   drawStartUp();    // Show RetroWatch Logo
   delay(3000);
@@ -202,23 +202,23 @@ void setup()   {
 void loop() {
   //>boolean isReceived = false;
   unsigned long current_time = 0;
-  
+
   // Get button input
-  if(digitalRead(buttonPin) == LOW) isClicked = LOW;
-  
+  if (digitalRead(buttonPin) == LOW) isClicked = LOW;
+
   // Receive data from remote and parse
   //>isReceived = receiveBluetoothData();
-  
+
   // Update clock time
   current_time = millis();
   updateTime(current_time);
-  
+
   // Display routine
   onDraw(current_time);
-  
+
   // If data doesn't arrive, wait for a while to save battery
   //>if(!isReceived)
-    //>delay(300);
+  //>delay(300);
 }
 
 
@@ -228,8 +228,8 @@ void loop() {
 //----- Utils
 ///////////////////////////////////
 void init_msg_array() {
-  for(int i=0; i<MSG_COUNT_MAX; i++) {
-    for(int j=0; j<MSG_BUFFER_MAX; j++) {
+  for (int i = 0; i < MSG_COUNT_MAX; i++) {
+    for (int j = 0; j < MSG_BUFFER_MAX; j++) {
       msgBuffer[i][j] = 0x00;
     }
   }
@@ -239,8 +239,8 @@ void init_msg_array() {
 }
 
 void init_emg_array() {
-  for(int i=0; i<EMG_COUNT_MAX; i++) {
-    for(int j=0; j<EMG_BUFFER_MAX; j++) {
+  for (int i = 0; i < EMG_COUNT_MAX; i++) {
+    for (int j = 0; j < EMG_BUFFER_MAX; j++) {
       emgBuffer[i][j] = 0x00;
     }
   }
@@ -262,22 +262,22 @@ void setTimeValue() {
 }
 
 void updateTime(unsigned long current_time) {
-  if(iMinutes >= 0) {
-    if(current_time - prevClockTime > UPDATE_TIME_INTERVAL) {
+  if (iMinutes >= 0) {
+    if (current_time - prevClockTime > UPDATE_TIME_INTERVAL) {
       // Increase time
       iMinutes++;
-      if(iMinutes >= 60) {
+      if (iMinutes >= 60) {
         iMinutes = 0;
         iHour++;
-        if(iHour > 12) {
+        if (iHour > 12) {
           iHour = 1;
-          (iAmPm == 0) ? iAmPm=1 : iAmPm=0;
-          if(iAmPm == 0) {
+          (iAmPm == 0) ? iAmPm = 1 : iAmPm = 0;
+          if (iAmPm == 0) {
             iWeek++;
-            if(iWeek > 7)
+            if (iWeek > 7)
               iWeek = 1;
             iDay++;
-            if(iDay > 30)  // Yes. day is not exact.
+            if (iDay > 30) // Yes. day is not exact.
               iDay = 1;
           }
         }
@@ -300,9 +300,9 @@ boolean receiveBluetoothData() {
   while(!isTransactionEnded) {
     if(BTSerial.available()) {
       byte c = BTSerial.read();
-      
+
       //if(c == 0xFE && TRANSACTION_POINTER != TR_MODE_WAIT_MESSAGE) return false;
-      
+
       if(TRANSACTION_POINTER == TR_MODE_IDLE) {
         parseStartSignal(c);
       }
@@ -321,7 +321,7 @@ boolean receiveBluetoothData() {
       else if(TRANSACTION_POINTER == TR_MODE_WAIT_COMPLETE) {
         isTransactionEnded = parseEndSignal(c);
       }
-      
+
     }  // End of if(BTSerial.available())
     else {
       isTransactionEnded = true;
@@ -387,7 +387,7 @@ void parseMessage(byte c) {
     processTransaction();
     TRANSACTION_POINTER = TR_MODE_IDLE;
   }
-  
+
   if(TR_COMMAND == CMD_TYPE_ADD_EMERGENCY_OBJ) {
     if(emgParsingChar < EMG_BUFFER_MAX - 1) {
       if(emgParsingChar > 1) {
@@ -511,33 +511,33 @@ void processTransaction() {
 // To avoid too fast redraw most page has display interval
 //
 void onDraw(unsigned long currentTime) {
-  if(!isDisplayTime(currentTime))    // Do not re-draw at every tick
+  if (!isDisplayTime(currentTime))   // Do not re-draw at every tick
     return;
-  
-  if(displayMode == DISPLAY_MODE_START_UP) {
+
+  if (displayMode == DISPLAY_MODE_START_UP) {
     drawStartUp();
   }
-  else if(displayMode == DISPLAY_MODE_CLOCK) {
-    if(isClicked == LOW) {    // User input received
+  else if (displayMode == DISPLAY_MODE_CLOCK) {
+    if (isClicked == LOW) {   // User input received
       startEmergencyMode();
       setPageChangeTime(0);    // Change mode with no page-delay
       setNextDisplayTime(currentTime, 0);    // Do not wait next re-draw time
     }
     else {
       drawClock();
-      
-      if(isPageChangeTime(currentTime)) {  // It's time to go into idle mode
+
+      if (isPageChangeTime(currentTime)) { // It's time to go into idle mode
         startIdleMode();
         setPageChangeTime(currentTime);  // Set a short delay
       }
       setNextDisplayTime(currentTime, CLOCK_DISP_INTERVAL);
     }
   }
-  else if(displayMode == DISPLAY_MODE_EMERGENCY_MSG) {
-    if(findNextEmerMessage()) {
+  else if (displayMode == DISPLAY_MODE_EMERGENCY_MSG) {
+    if (findNextEmerMessage()) {
       drawEmergency();
       emgCurDisp++;
-      if(emgCurDisp >= EMG_COUNT_MAX) {
+      if (emgCurDisp >= EMG_COUNT_MAX) {
         emgCurDisp = 0;
         startMessageMode();
       }
@@ -550,11 +550,11 @@ void onDraw(unsigned long currentTime) {
       setNextDisplayTime(currentTime, 0);  // with no re-draw interval
     }
   }
-  else if(displayMode == DISPLAY_MODE_NORMAL_MSG) {
-    if(findNextNormalMessage()) {
+  else if (displayMode == DISPLAY_MODE_NORMAL_MSG) {
+    if (findNextNormalMessage()) {
       drawMessage();
       msgCurDisp++;
-      if(msgCurDisp >= MSG_COUNT_MAX) {
+      if (msgCurDisp >= MSG_COUNT_MAX) {
         msgCurDisp = 0;
         startClockMode();
       }
@@ -567,12 +567,12 @@ void onDraw(unsigned long currentTime) {
       setNextDisplayTime(currentTime, 0);  // with no re-draw interval
     }
   }
-  else if(displayMode == DISPLAY_MODE_IDLE) {
-    if(isClicked == LOW) {    // Wake up watch if there's an user input
+  else if (displayMode == DISPLAY_MODE_IDLE) {
+    if (isClicked == LOW) {   // Wake up watch if there's an user input
       startClockMode();
       setPageChangeTime(currentTime);
       setNextDisplayTime(currentTime, 0);
-    } 
+    }
     else {
       drawIdleClock();
       setNextDisplayTime(currentTime, IDLE_DISP_INTERVAL);
@@ -581,26 +581,26 @@ void onDraw(unsigned long currentTime) {
   else {
     startClockMode();    // This means there's an error
   }
-  
+
   isClicked = HIGH;
 }  // End of onDraw()
 
 
 // To avoid re-draw on every drawing time
-// wait for time interval according to current mode 
+// wait for time interval according to current mode
 // But user input(button) breaks this sleep
 boolean isDisplayTime(unsigned long currentTime) {
-  if(currentTime - prevDisplayTime > next_display_interval) {
+  if (currentTime - prevDisplayTime > next_display_interval) {
     return true;
   }
-  if(isClicked == LOW) {
+  if (isClicked == LOW) {
     delay(500);
     return true;
   }
   return false;
 }
 
-// Set next re-draw time 
+// Set next re-draw time
 void setNextDisplayTime(unsigned long currentTime, unsigned long nextUpdateTime) {
   next_display_interval = nextUpdateTime;
   prevDisplayTime = currentTime;
@@ -608,8 +608,8 @@ void setNextDisplayTime(unsigned long currentTime, unsigned long nextUpdateTime)
 
 // Decide if it's the time to change page(mode)
 boolean isPageChangeTime(unsigned long currentTime) {
-  if(displayMode == DISPLAY_MODE_CLOCK) {
-    if(currentTime - mode_change_timer > CLOCK_DISPLAY_TIME)
+  if (displayMode == DISPLAY_MODE_CLOCK) {
+    if (currentTime - mode_change_timer > CLOCK_DISPLAY_TIME)
       return true;
   }
   return false;
@@ -622,11 +622,11 @@ void setPageChangeTime(unsigned long currentTime) {
 
 // Check if available emergency message exists or not
 boolean findNextEmerMessage() {
-  if(emgCurDisp < 0 || emgCurDisp >= EMG_COUNT_MAX) emgCurDisp = 0;
-  while(true) {
-    if(emgBuffer[emgCurDisp][0] == 0x00) {  // 0x00 means disabled
+  if (emgCurDisp < 0 || emgCurDisp >= EMG_COUNT_MAX) emgCurDisp = 0;
+  while (true) {
+    if (emgBuffer[emgCurDisp][0] == 0x00) { // 0x00 means disabled
       emgCurDisp++;
-      if(emgCurDisp >= EMG_COUNT_MAX) {
+      if (emgCurDisp >= EMG_COUNT_MAX) {
         emgCurDisp = 0;
         return false;
       }
@@ -640,11 +640,11 @@ boolean findNextEmerMessage() {
 
 // Check if available normal message exists or not
 boolean findNextNormalMessage() {
-  if(msgCurDisp < 0 || msgCurDisp >= MSG_COUNT_MAX) msgCurDisp = 0;
-  while(true) {
-    if(msgBuffer[msgCurDisp][0] == 0x00) {
+  if (msgCurDisp < 0 || msgCurDisp >= MSG_COUNT_MAX) msgCurDisp = 0;
+  while (true) {
+    if (msgBuffer[msgCurDisp][0] == 0x00) {
       msgCurDisp++;
-      if(msgCurDisp >= MSG_COUNT_MAX) {
+      if (msgCurDisp >= MSG_COUNT_MAX) {
         msgCurDisp = 0;
         return false;
       }
@@ -659,8 +659,8 @@ boolean findNextNormalMessage() {
 // Count all available emergency messages
 int countEmergency() {
   int count = 0;
-  for(int i=0; i<EMG_COUNT_MAX; i++) {
-    if(emgBuffer[i][0] != 0x00)
+  for (int i = 0; i < EMG_COUNT_MAX; i++) {
+    if (emgBuffer[i][0] != 0x00)
       count++;
   }
   return count;
@@ -669,8 +669,8 @@ int countEmergency() {
 // Count all available normal messages
 int countMessage() {
   int count = 0;
-  for(int i=0; i<MSG_COUNT_MAX; i++) {
-    if(msgBuffer[i][0] != 0x00)
+  for (int i = 0; i < MSG_COUNT_MAX; i++) {
+    if (msgBuffer[i][0] != 0x00)
       count++;
   }
   return count;
@@ -696,53 +696,53 @@ void startIdleMode() {
 
 // Draw indicator. Indicator shows count of emergency and normal message
 void drawIndicator() {
-  if(updateIndicator) {
+  if (updateIndicator) {
     int msgCount = countMessage();
     int emgCount = countEmergency();
     int drawCount = 1;
-    
-    if(msgCount > 0) {
+
+    if (msgCount > 0) {
       u8g.drawBitmapP( 127 - 8, 1, 1, 8, IMG_indicator_msg);
-      
+
       // Show message count
-//      String strTemp = String(msgCount);
-//      char buff[strTemp.length()+1];
-//      for(int i=0; i<strTemp.length()+1; i++) buff[i] = 0x00;
-//      strTemp.toCharArray(buff, strTemp.length());
-//      buff[strTemp.length()] = 0x00;
-//      
-//      u8g.setFont(u8g_font_fixed_v0);
-//      u8g.setFontRefHeightExtendedText();
-//      u8g.setDefaultForegroundColor();
-//      u8g.setFontPosTop();
-//      u8g.drawStr(127 - 15, 1, buff);
+      //      String strTemp = String(msgCount);
+      //      char buff[strTemp.length()+1];
+      //      for(int i=0; i<strTemp.length()+1; i++) buff[i] = 0x00;
+      //      strTemp.toCharArray(buff, strTemp.length());
+      //      buff[strTemp.length()] = 0x00;
+      //
+      //      u8g.setFont(u8g_font_fixed_v0);
+      //      u8g.setFontRefHeightExtendedText();
+      //      u8g.setDefaultForegroundColor();
+      //      u8g.setFontPosTop();
+      //      u8g.drawStr(127 - 15, 1, buff);
 
       drawCount++;
     }
-    
-    if(emgCount > 0) {
-      u8g.drawBitmapP( 127 - 8*drawCount - 7*(drawCount-1), 1, 1, 8, IMG_indicator_emg);
+
+    if (emgCount > 0) {
+      u8g.drawBitmapP( 127 - 8 * drawCount - 7 * (drawCount - 1), 1, 1, 8, IMG_indicator_emg);
       // Show message count
-//      String strTemp2 = String("");
-//      strTemp2 += emgCount;
-//      char buff2[strTemp2.length()+1];
-//      for(int i=0; i<strTemp2.length()+1; i++) buff2[i] = 0x00;
-//      strTemp2.toCharArray(buff2, strTemp2.length());
-//      buff2[strTemp2.length()] = 0x00;
-//      
-//      u8g.setFont(u8g_font_fixed_v0);
-//      u8g.setFontRefHeightExtendedText();
-//      u8g.setDefaultForegroundColor();
-//      u8g.setFontPosTop();
-//      u8g.drawStr(127 - 8*drawCount - 7*drawCount, 1, buff2);
+      //      String strTemp2 = String("");
+      //      strTemp2 += emgCount;
+      //      char buff2[strTemp2.length()+1];
+      //      for(int i=0; i<strTemp2.length()+1; i++) buff2[i] = 0x00;
+      //      strTemp2.toCharArray(buff2, strTemp2.length());
+      //      buff2[strTemp2.length()] = 0x00;
+      //
+      //      u8g.setFont(u8g_font_fixed_v0);
+      //      u8g.setFontRefHeightExtendedText();
+      //      u8g.setDefaultForegroundColor();
+      //      u8g.setFontPosTop();
+      //      u8g.drawStr(127 - 8*drawCount - 7*drawCount, 1, buff2);
     }
   }
 }
 
 // RetroWatch splash screen
 void drawStartUp() {
-  // picture loop  
-  u8g.firstPage();  
+  // picture loop
+  u8g.firstPage();
   do {
     u8g_prepare();
     // draw logo
@@ -754,14 +754,14 @@ void drawStartUp() {
     u8g.setFontPosTop();
     u8g.drawStr(45, 12, (char*)pgm_read_word(&(strIntro[0])));
     u8g.drawStr(45, 28, (char*)pgm_read_word(&(strIntro[1])));
-    
+
     u8g.setFont(u8g_font_fixed_v0);
     u8g.setFontRefHeightExtendedText();
     u8g.setDefaultForegroundColor();
     u8g.setFontPosTop();
     u8g.drawStr(45, 45, (char*)pgm_read_word(&(strIntro[2])));
-  } while( u8g.nextPage() );
-  
+  } while ( u8g.nextPage() );
+
   startClockMode();
 }
 
@@ -769,82 +769,82 @@ void drawStartUp() {
 void drawEmergency() {
   // get icon index
   int icon_num = 60;
-  if(emgBuffer[emgCurDisp][2] > -1 && emgBuffer[emgCurDisp][2] < ICON_ARRAY_SIZE)
+  if (emgBuffer[emgCurDisp][2] > -1 && emgBuffer[emgCurDisp][2] < ICON_ARRAY_SIZE)
     icon_num = (int)(emgBuffer[emgCurDisp][2]);
 
-  // picture loop  
-  u8g.firstPage();  
+  // picture loop
+  u8g.firstPage();
   do {
     u8g_prepare();
     // draw indicator
-    if(updateIndicator)
+    if (updateIndicator)
       drawIndicator();
     // draw icon and string
     drawIcon(centerX - 8, centerY - 20, icon_num);
-    
-    int string_start_x = u8g.getStrPixelWidth((char *)(emgBuffer[emgCurDisp]+3)) / 2;
-    if(string_start_x > 0) {
-      if(string_start_x > centerX) 
+
+    int string_start_x = u8g.getStrPixelWidth((char *)(emgBuffer[emgCurDisp] + 3)) / 2;
+    if (string_start_x > 0) {
+      if (string_start_x > centerX)
         string_start_x = 0;
-      else 
+      else
         string_start_x = centerX - string_start_x;
-        
+
       u8g.setFont(u8g_font_fixed_v0);
       u8g.setFontRefHeightExtendedText();
       u8g.setDefaultForegroundColor();
       u8g.setFontPosTop();
-      u8g.drawStr( string_start_x, centerY + 10, (char *)(emgBuffer[emgCurDisp]+3) );
+      u8g.drawStr( string_start_x, centerY + 10, (char *)(emgBuffer[emgCurDisp] + 3) );
     }
-  } while( u8g.nextPage() );
+  } while ( u8g.nextPage() );
 }
 
 // Draw normal message page
 void drawMessage() {
   // get icon index
   int icon_num = 0;
-  if(msgBuffer[msgCurDisp][2] > -1 && msgBuffer[msgCurDisp][2] < ICON_ARRAY_SIZE)
+  if (msgBuffer[msgCurDisp][2] > -1 && msgBuffer[msgCurDisp][2] < ICON_ARRAY_SIZE)
     icon_num = (int)(msgBuffer[msgCurDisp][2]);
-  
-  // picture loop  
-  u8g.firstPage();  
+
+  // picture loop
+  u8g.firstPage();
   do {
     u8g_prepare();
     // draw indicator
-    if(updateIndicator)
+    if (updateIndicator)
       drawIndicator();
     // draw icon and string
-    drawIcon(centerX - 8, centerY - 20, icon_num);    
-    
+    drawIcon(centerX - 8, centerY - 20, icon_num);
+
     int string_start_x = u8g.getStrPixelWidth((char *)(msgBuffer[msgCurDisp] + 3)) / 2;
-    if(string_start_x > 0) {
-      if(string_start_x > centerX) 
+    if (string_start_x > 0) {
+      if (string_start_x > centerX)
         string_start_x = 0;
-      else 
+      else
         string_start_x = centerX - string_start_x;
-        
+
       u8g.setFont(u8g_font_fixed_v0);
       u8g.setFontRefHeightExtendedText();
       u8g.setDefaultForegroundColor();
       u8g.setFontPosTop();
       u8g.drawStr( string_start_x, centerY + 10, (char *)(msgBuffer[msgCurDisp] + 3) );
     }
-  } while( u8g.nextPage() );
+  } while ( u8g.nextPage() );
 }
 
 // Draw main clock screen
 // Clock style changes according to user selection
 void drawClock() {
-  
-  // picture loop  
-  u8g.firstPage();  
+
+  // picture loop
+  u8g.firstPage();
   do {
     u8g_prepare();
     // draw indicator
-    if(updateIndicator)
+    if (updateIndicator)
       drawIndicator();
     // draw clock
     // CLOCK_STYLE_SIMPLE_DIGIT
-    if(clockStyle == CLOCK_STYLE_SIMPLE_DIGIT) {
+    if (clockStyle == CLOCK_STYLE_SIMPLE_DIGIT) {
       // Show text
       u8g.setFont(u8g_font_courB14);
       u8g.setFontRefHeightExtendedText();
@@ -852,19 +852,19 @@ void drawClock() {
       u8g.setFontPosTop();
       u8g.drawStr(centerX - 34, centerY - 17, (const char*)pgm_read_word(&(weekString[iWeek])));
       u8g.drawStr(centerX + 11, centerY - 17, (const char*)pgm_read_word(&(ampmString[iAmPm])));
-      
+
       String strDate = String("");
       char buff[6];
-      if(iHour < 10)
+      if (iHour < 10)
         strDate += "0";
       strDate += iHour;
       strDate += ":";
-      if(iMinutes < 10)
+      if (iMinutes < 10)
         strDate += "0";
       strDate += iMinutes;
       strDate.toCharArray(buff, 6);
       buff[5] = 0x00;
-      
+
       u8g.setFont(u8g_font_courB14);
       u8g.setFontRefHeightExtendedText();
       u8g.setDefaultForegroundColor();
@@ -872,11 +872,11 @@ void drawClock() {
       u8g.drawStr(centerX - 29, centerY + 6, buff);
     }
     // CLOCK_STYLE_SIMPLE_MIX
-    else if(clockStyle == CLOCK_STYLE_SIMPLE_MIX) {
+    else if (clockStyle == CLOCK_STYLE_SIMPLE_MIX) {
       u8g.drawCircle(centerY, centerY, iRadius - 6);
-      showTimePin(centerY, centerY, 0.1, 0.4, iHour*5 + (int)(iMinutes*5/60));
+      showTimePin(centerY, centerY, 0.1, 0.4, iHour * 5 + (int)(iMinutes * 5 / 60));
       showTimePin(centerY, centerY, 0.1, 0.70, iMinutes);
-      
+
       // Show text
       u8g.setFont(u8g_font_fixed_v0);
       u8g.setFontRefHeightExtendedText();
@@ -884,19 +884,19 @@ void drawClock() {
       u8g.setFontPosTop();
       u8g.drawStr(centerX + 3, 23, (const char*)pgm_read_word(&(weekString[iWeek])));
       u8g.drawStr(centerX + 28, 23, (const char*)pgm_read_word(&(ampmString[iAmPm])));
-      
+
       String strDate = String("");
       char buff[6];
-      if(iHour < 10)
+      if (iHour < 10)
         strDate += "0";
       strDate += iHour;
       strDate += ":";
-      if(iMinutes < 10)
+      if (iMinutes < 10)
         strDate += "0";
       strDate += iMinutes;
       strDate.toCharArray(buff, 6);
       buff[5] = 0x00;
-      
+
       u8g.setFont(u8g_font_courB14);
       u8g.setFontRefHeightExtendedText();
       u8g.setDefaultForegroundColor();
@@ -906,75 +906,75 @@ void drawClock() {
     else {
       // CLOCK_STYLE_SIMPLE_ANALOG.
       u8g.drawCircle(centerX, centerY, iRadius);
-      showTimePin(centerX, centerY, 0.1, 0.5, iHour*5 + (int)(iMinutes*5/60));
+      showTimePin(centerX, centerY, 0.1, 0.5, iHour * 5 + (int)(iMinutes * 5 / 60));
       showTimePin(centerX, centerY, 0.1, 0.78, iMinutes);
-      
+
       iSecond++;
-      if(iSecond > 60) iSecond = 0;
+      if (iSecond > 60) iSecond = 0;
     }
-  } while( u8g.nextPage() );
-  
+  } while ( u8g.nextPage() );
+
 }
 
 // Draw idle page
 void drawIdleClock() {
-  // picture loop  
-  u8g.firstPage();  
+  // picture loop
+  u8g.firstPage();
   do {
     u8g_prepare();
     // draw indicator
-    if(updateIndicator)
+    if (updateIndicator)
       drawIndicator();
     // show time
     String strDate = String("");
     char buff[6];
-    if(iHour < 10)
+    if (iHour < 10)
       strDate += "0";
     strDate += iHour;
     strDate += ":";
-    if(iMinutes < 10)
+    if (iMinutes < 10)
       strDate += "0";
     strDate += iMinutes;
     strDate.toCharArray(buff, 6);
     buff[5] = 0x00;
-    
+
     u8g.setFont(u8g_font_courB14);
     u8g.setFontRefHeightExtendedText();
     u8g.setDefaultForegroundColor();
     u8g.setFontPosTop();
     u8g.drawStr(centerX - 29, centerY - 4, buff);
-  } while( u8g.nextPage() );
+  } while ( u8g.nextPage() );
 
 }
 
 // Returns starting point of normal string to display
 int getCenterAlignedXOfMsg(int msgIndex) {
   int pointX = centerX;
-  for(int i=3; i<MSG_BUFFER_MAX; i++) {
+  for (int i = 3; i < MSG_BUFFER_MAX; i++) {
     char curChar = msgBuffer[msgIndex][i];
-    if(curChar == 0x00) break;
-    if(curChar >= 0xf0) continue;
+    if (curChar == 0x00) break;
+    if (curChar >= 0xf0) continue;
     pointX -= 3;
   }
-  if(pointX < 0) pointX = 0;
+  if (pointX < 0) pointX = 0;
   return pointX;
 }
 
 // Returns starting point of emergency string to display
 int getCenterAlignedXOfEmg(int emgIndex) {
   int pointX = centerX;
-  for(int i=3; i<EMG_BUFFER_MAX; i++) {
+  for (int i = 3; i < EMG_BUFFER_MAX; i++) {
     char curChar = emgBuffer[emgIndex][i];
-    if(curChar == 0x00) break;
-    if(curChar >= 0xf0) continue;
+    if (curChar == 0x00) break;
+    if (curChar >= 0xf0) continue;
     pointX -= 3;
   }
-  if(pointX < 0) pointX = 0;
+  if (pointX < 0) pointX = 0;
   return pointX;
 }
 
 // Calculate clock pin position
-double RAD=3.141592/180;
+double RAD = 3.141592 / 180;
 double LR = 89.99;
 void showTimePin(int center_x, int center_y, double pl1, double pl2, double pl3) {
   double x1, x2, y1, y2;
@@ -982,13 +982,13 @@ void showTimePin(int center_x, int center_y, double pl1, double pl2, double pl3)
   y1 = center_y + (iRadius * pl1) * sin((6 * pl3 + LR) * RAD);
   x2 = center_x + (iRadius * pl2) * cos((6 * pl3 - LR) * RAD);
   y2 = center_y + (iRadius * pl2) * sin((6 * pl3 - LR) * RAD);
-  
+
   u8g.drawLine((int)x1, (int)y1, (int)x2, (int)y2);
 }
 
 // Icon drawing tool
 void drawIcon(int posx, int posy, int icon_num) {
-  if(icon_num < 0 || icon_num >= ICON_ARRAY_SIZE)
+  if (icon_num < 0 || icon_num >= ICON_ARRAY_SIZE)
     return;
 
   u8g.drawBitmapP( posx, posy, 2, 16, (const unsigned char*)pgm_read_word(&(bitmap_array[icon_num])));
